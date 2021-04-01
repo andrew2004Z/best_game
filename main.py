@@ -24,20 +24,8 @@ class Window:
         return 0
 
 
-def run():
-    sdl2.ext.init()
-    window = sdl2.ext.Window("Best", size=(1080, 720))
-    window.show()
-    running = True
-    while running:
-        events = sdl2.ext.get_events()
-        for event in events:
-            if event.type == sdl2.SDL_QUIT:
-                running = False
-                break
-        window.refresh()
-    return 0
 
-#window = Window((1080, 720), (240, 40, 40), "Best Game")
+
 if __name__ == "__main__":
-    sys.exit(run())
+    window = Window((1080, 720), (240, 40, 40), "Best Game")
+    sys.exit(window.run())
