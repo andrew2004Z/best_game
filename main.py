@@ -24,8 +24,10 @@ class Window:
         return 0
 
 
-
+def main():
+    window = Window((1080, 720), (240, 40, 40), "Best Game")
+    window.run()
 
 if __name__ == "__main__":
     window = Window((1080, 720), (240, 40, 40), "Best Game")
-    sys.exit(window.run())
+    sys.exit(main())
