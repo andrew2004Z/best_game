@@ -36,19 +36,28 @@ class Window:
         #window = sdl2.ext.Window(self.name, size=self.size)
         self.window.show()
         running = True
+        Window.fill_Window(self, (0, 100, 240))
         while running:
             events = sdl2.ext.get_events()
-            Window.fill_Window(self, (0, 100, 240))
             for event in events:
                 if event.type == sdl2.SDL_QUIT:
                     running = False
                     break
+                elif event.type == sdl2.SDL_KEYDOWN:
+                    if event.key.keysym.sym == sdl2.SDLK_UP:
+                        for i in range(100):
+                            for j in range(10):
+                                Window.d1_point(self, i, j, self.window.get_surface(), (0, 0, 0))
+                            #Window.d1_point(self, 11, 20, self.window.get_surface(), (0, 0, 0))
+                            #Window.d1_point(self, 12, 20, self.window.get_surface(), (0, 0, 0))
+                            #Window.d1_point(self, 13, 20, self.window.get_surface(), (0, 0, 0))
+                            #Window.d1_point(self, 14, 20, self.window.get_surface(), (0, 0, 0))
                 elif event.type == sdl2.SDL_CONTROLLER_BUTTON_X:
-                    Window.d1_point(self, 10, 20, self.window.get_surface(), (0, 0, 0))
-                    Window.d1_point(self, 11, 20, self.window.get_surface(), (0, 0, 0))
-                    Window.d1_point(self, 12, 20, self.window.get_surface(), (0, 0, 0))
-                    Window.d1_point(self, 13, 20, self.window.get_surface(), (0, 0, 0))
-                    Window.d1_point(self, 14, 20, self.window.get_surface(), (0, 0, 0))
+                    Window.d_point(self, 10, 20, self.window.get_surface(), (0, 0, 0))
+                    Window.d_point(self, 11, 20, self.window.get_surface(), (0, 0, 0))
+                    Window.d_point(self, 12, 20, self.window.get_surface(), (0, 0, 0))
+                    Window.d_point(self, 13, 20, self.window.get_surface(), (0, 0, 0))
+                    Window.d_point(self, 14, 20, self.window.get_surface(), (0, 0, 0))
                     #Window.d_point(self, 10, 20, (0, 0, 0))
                     #Window.d_point(self, 11, 20, (0, 0, 0))
                     #Window.d_point(self, 12, 20, (0, 0, 0))
