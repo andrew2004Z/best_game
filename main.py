@@ -2,6 +2,18 @@ import sys
 import sdl2
 import sdl2.ext
 import sdl2.sdlgfx
+from PIL import Image
+
+
+def draw_menu(path):
+    image = Image.open(path)
+    size = image.size
+    pix = image.load()
+    sp = []
+    for i in range(size[0]):
+        for j in range(size[1]):
+            sp.append([[i, j], pix[i, j]])
+    return sp
 
 
 class Window:
@@ -18,10 +30,15 @@ class Window:
     def d1_point(self, x, y, surface, color):
         r, g, b = color
         WHITE = sdl2.ext.Color(r, g, b)
-        #sdl2.ext.fill(surface, BLACK)
+        # sdl2.ext.fill(surface, BLACK)
         pixelview = sdl2.ext.PixelView(surface)
         pixelview[y][x] = WHITE
-        #del pixelview
+        # del pixelview
+
+    def draw_menu(self):
+        matrix = draw_menu('Menu.png')
+        for i in matrix:
+            Window.d1_point(self, i[0][0], i[0][1], self.window.get_surface(), i[1][:-1])
 
     def d_point(self, x, y, color):
         r, g, b = color
@@ -33,10 +50,11 @@ class Window:
 
     def run(self):
         sdl2.ext.init()
-        #window = sdl2.ext.Window(self.name, size=self.size)
+        # window = sdl2.ext.Window(self.name, size=self.size)
         self.window.show()
         running = True
         Window.fill_Window(self, (0, 100, 240))
+        #Window.draw_menu(self)
         while running:
             events = sdl2.ext.get_events()
             for event in events:
@@ -45,39 +63,37 @@ class Window:
                     break
                 elif event.type == sdl2.SDL_KEYDOWN:
                     if event.key.keysym.sym == sdl2.SDLK_UP:
-                        for i in range(100):
-                            for j in range(10):
-                                Window.d1_point(self, i, j, self.window.get_surface(), (0, 0, 0))
-                            #Window.d1_point(self, 11, 20, self.window.get_surface(), (0, 0, 0))
-                            #Window.d1_point(self, 12, 20, self.window.get_surface(), (0, 0, 0))
-                            #Window.d1_point(self, 13, 20, self.window.get_surface(), (0, 0, 0))
-                            #Window.d1_point(self, 14, 20, self.window.get_surface(), (0, 0, 0))
+                        for i in range(10, 100):
+                            for j in range(10, 20):
+                                Window.d1_point(self, i, j, self.window.get_surface(), (100, 100, 100))
+                        # Window.d1_point(self, 11, 20, self.window.get_surface(), (0, 0, 0))
+                        # Window.d1_point(self, 12, 20, self.window.get_surface(), (0, 0, 0))
+                        # Window.d1_point(self, 13, 20, self.window.get_surface(), (0, 0, 0))
+                        # Window.d1_point(self, 14, 20, self.window.get_surface(), (0, 0, 0))
                 elif event.type == sdl2.SDL_CONTROLLER_BUTTON_X:
                     Window.d_point(self, 10, 20, self.window.get_surface(), (0, 0, 0))
                     Window.d_point(self, 11, 20, self.window.get_surface(), (0, 0, 0))
                     Window.d_point(self, 12, 20, self.window.get_surface(), (0, 0, 0))
                     Window.d_point(self, 13, 20, self.window.get_surface(), (0, 0, 0))
                     Window.d_point(self, 14, 20, self.window.get_surface(), (0, 0, 0))
-                    #Window.d_point(self, 10, 20, (0, 0, 0))
-                    #Window.d_point(self, 11, 20, (0, 0, 0))
-                    #Window.d_point(self, 12, 20, (0, 0, 0))
-                    #Window.d_point(self, 13, 20, (0, 0, 0))
-                    #Window.d_point(self, 14, 20, (0, 0, 0))
-                    #Window.d_point(self, 15, 20, (0, 0, 0))
+                    # Window.d_point(self, 10, 20, (0, 0, 0))
+                    # Window.d_point(self, 11, 20, (0, 0, 0))
+                    # Window.d_point(self, 12, 20, (0, 0, 0))
+                    # Window.d_point(self, 13, 20, (0, 0, 0))
+                    # Window.d_point(self, 14, 20, (0, 0, 0))
+                    # Window.d_point(self, 15, 20, (0, 0, 0))
             self.window.refresh()
         return 0
 
 
-    
-
-
 def main():
     window = Window((1080, 720), "Best Game")
-    
+
     window.run()
-    #window.fill_Window((240, 0, 0))
-    #fill_Window(window, 240, 0, 0)
+    # window.fill_Window((240, 0, 0))
+    # fill_Window(window, 240, 0, 0)
+
 
 if __name__ == "__main__":
-    #window = Window((1080, 720), (240, 40, 40), "Best Game")
+    # window = Window((1080, 720), (240, 40, 40), "Best Game")
     sys.exit(main())
