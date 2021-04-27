@@ -4,9 +4,30 @@ import sdl2.ext
 import sdl2.sdlgfx
 from math import sin, cos, sqrt
 from PIL import Image
-import time
 import random
-import pygame as pg
+
+
+def draw_1(path, color, new_image):
+    sp = []
+    image = Image.open(path)
+    size = image.size
+    pix = image.load()
+    for i in range(size[0]):
+        for j in range(size[1]):
+            if pix[i, j] == color:
+                sp.append([i*5, round(j*3.5)])
+                #pix[i, j] = (255, 255, 255)
+    return sp
+
+def draw_menu(path):
+    image = Image.open(path)
+    size = image.size
+    pix = image.load()
+    sp = []
+    for i in range(size[0]):
+        for j in range(size[1]):
+            sp.append([[i, j], pix[i, j]])
+    return sp
 
 
 class Window:
@@ -31,19 +52,19 @@ class Window:
         pixelview = sdl2.ext.PixelView(surface)
         pixelview[y][x] = WHITE
 
-    def draw_random_l(self):
-        for i in enumerated(create_labyrinth(1080, 720)[:-2]):
-            for j in enumerated(i):
-                print(j)
-                if j == True:
-                    Window.d1_point(self, i, j, self.window.get_surface(), (0, 0, 0))
-
-
     def draw_menu(self):
         matrix = draw_menu('Menu.png')
         for i in matrix:
             Window.d1_point(self, i[0][0], i[0][1],
                             self.window.get_surface(), i[1][:-1])
+
+    def d_point(self, x, y, color):
+        r, g, b = color
+        renderer = sdl2.ext.Renderer(self.window)
+        renderer.draw_point([x, y], sdl2.ext.Color(r, g, b))
+        renderer.present()
+        processor = sdl2.ext.TestEventProcessor()
+        processor.run(self.window)
 
     def line_vert(self, x, y, l, color=(0, 0, 0)):
         sp = [[x, y]]
@@ -202,17 +223,6 @@ class Window:
                     Window.d1_point(self, x, y, self.window.get_surface(), (0, 0, 0))
 
 
-    def draw_pravila(self):
-        sp = []
-        image = Image.open('data/pravila.png')
-        size = image.size
-        pix = image.load()
-        for x in range(size[0]):
-            for y in range(size[1]):
-                #print(pix[x, y])
-                if pix[x, y] != (255, 255, 255):
-                    Window.d1_point(self, x, y, self.window.get_surface(), (0, 0, 0))
-
     def draw_you_win(self):
         sp = []
         image = Image.open('data/YOU WIN.png')
@@ -248,60 +258,7 @@ class Window:
                     except:
                         pass
                     Window.d1_point(self, x, y, self.window.get_surface(), (0, 0, 0))
-#                    sdl2.SD
         return sp, sp1
-
-    def draw_l5(self):
-        sp = []
-        sp1 = []
-        image = Image.open('data/5.png')
-        size = image.size
-        pix = image.load()
-        for i in range(535, 543):
-            sp1.append([i, 0])
-            Window.d1_point(self, i, 0, self.window.get_surface(), (255, 0, 0))
-        for i in range(535, 543):
-            sp1.append([i, 1])
-            Window.d1_point(self, i, 1, self.window.get_surface(), (255, 0, 0))
-        for i in range(535, 543):
-            sp1.append([i, 2])
-            Window.d1_point(self, i, 2, self.window.get_surface(), (255, 0, 0))
-        for x in range(size[0]):
-            for y in range(size[1]):
-                if pix[x, y] == (0, 0, 0, 255):
-                    #print(pix[x - 1, y])
-                    try:
-                        if pix[x - 1, y] != (0, 0, 0) or pix[x - 1, y - 1] != (0, 0, 0) or pix[x, y - 1] != (0, 0, 0) or pix[x + 1, y] != (0, 0, 0) or pix[x, y + 1] != (0, 0, 0) or pix[x + 1, y + 1] != (0, 0, 0) or pix[x - 1, y + 1] != (0, 0, 0) or pix[x + 1, y - 1] != (0, 0, 0):
-                            sp.append([x, y])
-                    except:
-                        pass
-                    Window.d1_point(self, x, y, self.window.get_surface(), (0, 0, 0))
-#                    sdl2.SD
-        return sp, sp1
-
-    def draw_bomb(self, x, y, color1, color2):
-        Window.rectangle1(self, x, y, 7, 7, color1)
-        Window.rectangle1(self, x + 7, y + 7, 35, 35, color1)
-        Window.rectangle1(self, x + 21, y, 7, 7, color1)
-        Window.rectangle1(self, x + 21, y - 7, 7, 7, color1)
-        Window.rectangle1(self, x + 21 + 21, y, 7, 7, color1)
-        Window.rectangle1(self, x, y + 21, 7, 7, color1)
-        Window.rectangle1(self, x- 7, y + 21, 7, 7, color1)
-        Window.rectangle1(self, x, y + 42, 7, 7, color1)
-        Window.rectangle1(self, x, y + 42, 7, 7, color1)
-
-        Window.rectangle1(self, x + 21, y + 42, 7, 7, color1)
-        Window.rectangle1(self, x +21, y + 42, 7, 7, color1)
-        Window.rectangle1(self, x + 21, y + 49, 7, 7, color1)
-
-        Window.rectangle1(self, x + 42, y + 42, 7, 7, color1)
-        Window.rectangle1(self, x + 42, y + 21, 7, 7, color1)
-        Window.rectangle1(self, x + 49, y + 21, 7, 7, color1)
-        
-        Window.rectangle1(self, x + 25, y + 15, 5, 5, color2)
-        Window.rectangle1(self, x + 30, y + 15, 5, 5, color2)
-        Window.rectangle1(self, x + 30, y + 20, 5, 5, color2)
-
         #Window.line_goriz1(self, 1, 1, 1080, 3)
         #Window.line_goriz1(self, 1, 716, 470, 3)
         #Window.line_goriz1(self, 545, 716, 536, 3)
@@ -329,11 +286,26 @@ class Window:
 
     def run(self):
         sdl2.ext.init()
+        # window = sdl2.ext.Window(self.name, size=self.size)
         self.window.show()
         running = True
         Window.fill_Window(self, (0, 100, 240))
         Window.draw_menu(self)
-        while running:            
+        start_game = False
+        while running:
+            #if start_game and random.randint(1, 10) > 9:
+            #    try:
+            #        Window.rectangle1(self, self.pos_x1,
+            #                          self.pos_y1, 5, 5, color=(100, 10, 100))
+            #        Window.rectangle1(self, self.pos_x1,
+            #                          self.pos_y1 + 10, 5, 5)
+            #        self.pos_y1 = self.pos_y1 + 10
+            #    except:
+            #        pass
+            #if start_game and self.pos_x1 == self.pos_x and self.pos_y1 == self.pos_y:
+            #    print('Game over')
+            #    sdl2.ext.quit()
+            #    return None
             events = sdl2.ext.get_events()
             for event in events:
                 if event.type == sdl2.SDL_QUIT:
@@ -352,12 +324,12 @@ class Window:
                         Window.fill_Window(self, (0, 100, 240))
                         sp_wall, sp_exit = Window.draw_l2(self)
                         self.size_p = 5
-                        self.pos_x, self.pos_y = 695, 258
+                        self.pos_x, self.pos_y = 50, 10
                         sp_pl = Window.rectangle1(self, self.pos_x, self.pos_y, self.size_p, self.size_p, color=(0, 0, 0))
-                    elif event.key.keysym.sym == sdl2.SDLK_g:
-                        Window.fill_Window(self, (0, 100, 240))
-                        Window.draw_pravila(self)
                     elif event.key.keysym.sym == sdl2.SDLK_RIGHT:
+                        #print(Window.rec_pos_plaer(self, self.pos_x + 10, self.pos_y, 20, 20))
+                        #print()
+                        #print(sp_wall)
                         if not Window.check_collision(Window.rectangle2(self, self.pos_x +  self.size_p, self.pos_y, self.size_p, self.size_p), sp_exit):
                             Window.fill_Window(self, (0, 100, 240))
                             Window.draw_you_win(self)
@@ -411,21 +383,59 @@ class Window:
                             Window.draw_you_win(self)
                         elif Window.check_collision(Window.rectangle2(self, self.pos_x, self.pos_y +  self.size_p, self.size_p, self.size_p), sp_wall):
                             try:
-                                Window.rectangle1(self, self.pos_x, self.pos_y,  self.size_p,  self.size_p, color=(100, 10, 100))
-                                Window.rectangle1(self, self.pos_x, self.pos_y +  self.size_p, self.size_p, self.size_p)
+                                Window.rectangle1(
+                                    self, self.pos_x, self.pos_y,  self.size_p,  self.size_p, color=(100, 10, 100))
+                                Window.rectangle1(
+                                    self, self.pos_x, self.pos_y +  self.size_p, self.size_p, self.size_p)
                                 self.pos_y = self.pos_y +  self.size_p
                             except:
-                                Window.rectangle1(self, self.pos_x, self.pos_y,  self.size_p, self.size_p, color=(100, 10, 100))
-                                Window.rectangle1(self, self.pos_x, self.pos_y,  self.size_p, self.size_p)
+                                Window.rectangle1(
+                                    self, self.pos_x, self.pos_y,  self.size_p, self.size_p, color=(100, 10, 100))
+                                Window.rectangle1(
+                                    self, self.pos_x, self.pos_y,  self.size_p, self.size_p)
+                    elif event.key.keysym.sym == sdl2.SDLK_r:
+                        Window.fill_Window(self, (100, 90, 7))
+                        self.pos_x, self.pos_y = 0, 700
+                        # try:
+                        #    Window.rectangle1(self, x, y, 20, 20, color=(100, 10, 100))
+                        #    Window.rectangle1(self, x, y + 10, 20, 20)
+                        #    y = y + 10
+                        # except:
+                        #    Window.rectangle1(self, x, y, 20, 20, color=(100, 10, 100))
+                        #    Window.rectangle1(self, x, y, 20, 20)
+                        # for i in range(10, 100):
+                        #    for j in range(10, 20):
+                        #        Window.d1_point(self, i, j, self.window.get_surface(), (100, 100, 100))
+                        # Window.d1_point(self, 11, 20, self.window.get_surface(), (0, 0, 0))
+                        # Window.d1_point(self, 12, 20, self.window.get_surface(), (0, 0, 0))
+                        # Window.d1_point(self, 13, 20, self.window.get_surface(), (0, 0, 0))
+                        # Window.d1_point(self, 14, 20, self.window.get_surface(), (0, 0, 0))
+                elif event.type == sdl2.SDL_CONTROLLER_BUTTON_X:
+                    Window.d_point(
+                        self, 10, 20, self.window.get_surface(), (0, 0, 0))
+                    Window.d_point(
+                        self, 11, 20, self.window.get_surface(), (0, 0, 0))
+                    Window.d_point(
+                        self, 12, 20, self.window.get_surface(), (0, 0, 0))
+                    Window.d_point(
+                        self, 13, 20, self.window.get_surface(), (0, 0, 0))
+                    Window.d_point(
+                        self, 14, 20, self.window.get_surface(), (0, 0, 0))
+                    # Window.d_point(self, 10, 20, (0, 0, 0))
+                    # Window.d_point(self, 11, 20, (0, 0, 0))
+                    # Window.d_point(self, 12, 20, (0, 0, 0))
+                    # Window.d_point(self, 13, 20, (0, 0, 0))
+                    # Window.d_point(self, 14, 20, (0, 0, 0))
+                    # Window.d_point(self, 15, 20, (0, 0, 0))
             self.window.refresh()
         return 0
 
 
 def main():
     window = Window((1082, 722), "Best Game", 0, 700, 10, 0)
-    #pg.init()
-    #pg.mixer.music.load('data/music.mp3')
-    #pg.mixer.music.play()
+    pg.init()
+    pg.mixer.music.load('data/music.mp3')
+    pg.mixer.music.play()
     window.run()
     # window.fill_Window((240, 0, 0))
     # fill_Window(window, 240, 0, 0)

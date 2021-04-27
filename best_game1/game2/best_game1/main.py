@@ -2,18 +2,18 @@ import sys
 import sdl2
 import sdl2.ext
 import sdl2.sdlgfx
-from math import sin, cos, sqrt
 from PIL import Image
-import time
-import random
 import pygame as pg
-
+import time
+import data
+import os
 
 class Window:
     def __init__(self, size, name, x, y, x1, y1):
         self.size = size
         self.name = name
         self.window = sdl2.ext.Window(self.name, size=self.size)
+        self.window_timer = sdl2.ext.Window('Время', size=(150, 30))
         self.pos_x = x
         self.pos_y = y
         self.pos_x1 = x1
@@ -24,6 +24,11 @@ class Window:
         r, g, b = color
         COLOR = sdl2.ext.Color(r, g, b)
         sdl2.ext.fill(self.window.get_surface(), COLOR)
+
+    def fill_Window1(self, color):
+        r, g, b = color
+        COLOR = sdl2.ext.Color(r, g, b)
+        sdl2.ext.fill(self.window_timer.get_surface(), COLOR)
 
     def d1_point(self, x, y, surface, color):
         r, g, b = color
@@ -37,7 +42,6 @@ class Window:
                 print(j)
                 if j == True:
                     Window.d1_point(self, i, j, self.window.get_surface(), (0, 0, 0))
-
 
     def draw_menu(self):
         matrix = draw_menu('Menu.png')
@@ -150,6 +154,35 @@ class Window:
                    pass
         return sp
 
+    def draw_0(self, x1, y1):
+        sp = []
+        image = Image.open('data/0.png')
+        size = image.size
+        pix = image.load()
+        for x in range(size[0]):
+            for y in range(size[1]):
+                if pix[x, y] != (255, 255, 255):
+                    Window.d1_point(self, x + x1, y + y1, self.window_timer.get_surface(), pix[x, y])
+
+    def draw_1(self, x1, y1):
+        sp = []
+        image = Image.open('data/1.png')
+        size = image.size
+        pix = image.load()
+        for x in range(size[0]):
+            for y in range(size[1]):
+                if pix[x, y] != (255, 255, 255):
+                    Window.d1_point(self, x + x1, y + y1, self.window_timer.get_surface(), pix[x, y])
+
+    def draw_timer(self, time_now):
+        Window.fill_Window1(self, (0, 100, 240))
+        for j, i in enumerated(time_now):
+            if i == 0:
+                Window.draw_0(self, 26 * j, 5)
+            if i == 1:
+                Window.draw_1(self, 26 * j, 5)
+
+
     def drawDDA(self, x1, y1, x2, y2, color=(0, 0, 0)):
         x, y = x1, y1
         length = abs((x2 - x1) if abs(x2 - x1) > abs(y2 - y1) else (y2 - y1))
@@ -189,9 +222,10 @@ class Window:
                         pass
                     Window.d1_point(self, x, y, self.window.get_surface(), (0, 0, 0))
         return sp, sp1
-    
+
 
     def draw_menu(self):
+        Window.fill_Window(self, (0, 100, 240))
         sp = []
         image = Image.open('data/Menu.png')
         size = image.size
@@ -203,18 +237,17 @@ class Window:
 
 
     def draw_pravila(self):
-        sp = []
+        Window.fill_Window(self, (0, 100, 240))
         image = Image.open('data/pravila.png')
         size = image.size
         pix = image.load()
         for x in range(size[0]):
             for y in range(size[1]):
-                #print(pix[x, y])
                 if pix[x, y] != (255, 255, 255):
                     Window.d1_point(self, x, y, self.window.get_surface(), (0, 0, 0))
 
     def draw_you_win(self):
-        sp = []
+        global level
         image = Image.open('data/YOU WIN.png')
         size = image.size
         pix = image.load()
@@ -222,6 +255,19 @@ class Window:
             for y in range(size[1]):
                 if pix[x, y] != (255, 255, 255):
                     Window.d1_point(self, x, y, self.window.get_surface(), (0, 0, 0))
+        level = 0
+
+    def draw_game_over(self):
+        global level
+        image = Image.open('data/game_over.jpg')
+        size = image.size
+        pix = image.load()
+        Window.fill_Window(self, (0, 0, 0))
+        for x in range(size[0]):
+            for y in range(size[1]):
+                if pix[x, y] != (0, 0, 0):
+                    Window.d1_point(self, x, y, self.window.get_surface(), (255, 0, 0))
+        level = 0
 
     def draw_l2(self):
         sp = []
@@ -279,144 +325,159 @@ class Window:
 #                    sdl2.SD
         return sp, sp1
 
-    def draw_bomb(self, x, y, color1, color2):
-        Window.rectangle1(self, x, y, 7, 7, color1)
-        Window.rectangle1(self, x + 7, y + 7, 35, 35, color1)
-        Window.rectangle1(self, x + 21, y, 7, 7, color1)
-        Window.rectangle1(self, x + 21, y - 7, 7, 7, color1)
-        Window.rectangle1(self, x + 21 + 21, y, 7, 7, color1)
-        Window.rectangle1(self, x, y + 21, 7, 7, color1)
-        Window.rectangle1(self, x- 7, y + 21, 7, 7, color1)
-        Window.rectangle1(self, x, y + 42, 7, 7, color1)
-        Window.rectangle1(self, x, y + 42, 7, 7, color1)
 
-        Window.rectangle1(self, x + 21, y + 42, 7, 7, color1)
-        Window.rectangle1(self, x +21, y + 42, 7, 7, color1)
-        Window.rectangle1(self, x + 21, y + 49, 7, 7, color1)
+    def down(self, sp_wall, sp_exit):
+        global level
+        if not Window.check_collision(self, Window.rectangle2(self, self.pos_x + self.size_p, self.pos_y, self.size_p,
+                                                              self.size_p), sp_exit):
+            Window.fill_Window(self, (0, 100, 240))
+            Window.draw_you_win(self)
+            level = 0
+        elif Window.check_collision(self, Window.rectangle2(self, self.pos_x, self.pos_y + self.size_p, self.size_p,
+                                                            self.size_p), sp_wall):
+            try:
+                Window.rectangle1(self, self.pos_x, self.pos_y, self.size_p, self.size_p, color=(100, 10, 100))
+                Window.rectangle1(self, self.pos_x, self.pos_y + self.size_p, self.size_p, self.size_p)
+                self.pos_y = self.pos_y + self.size_p
+            except:
+                Window.rectangle1(self, self.pos_x, self.pos_y, self.size_p, self.size_p, color=(100, 10, 100))
+                Window.rectangle1(self, self.pos_x, self.pos_y, self.size_p, self.size_p)
 
-        Window.rectangle1(self, x + 42, y + 42, 7, 7, color1)
-        Window.rectangle1(self, x + 42, y + 21, 7, 7, color1)
-        Window.rectangle1(self, x + 49, y + 21, 7, 7, color1)
-        
-        Window.rectangle1(self, x + 25, y + 15, 5, 5, color2)
-        Window.rectangle1(self, x + 30, y + 15, 5, 5, color2)
-        Window.rectangle1(self, x + 30, y + 20, 5, 5, color2)
-
-        #Window.line_goriz1(self, 1, 1, 1080, 3)
-        #Window.line_goriz1(self, 1, 716, 470, 3)
-        #Window.line_goriz1(self, 545, 716, 536, 3)
-        #Window.line_vert1(self, 1, 1, 716, 3)
-        #Window.line_vert1(self, 1076, 1, 716, 3)
-        #Window.line_vert1(self, 545, 626, 90, 3)
-        #Window.line_goriz1(self, 545, 626, 263, 3)
-        #Window.line_goriz1(self, 545, 536, 285, 3)
-        #Window.line_vert1(self, 830, 422, 263, 3)
-        #Window.line_goriz1(self, 830, 626, 250, 3)
-        #Window.line_vert1(self, 465, 500, 126, 3)
-        #Window.line_vert1(self, 375, 590, 126, 3)
-        #Window.line_vert1(self, 185, 656, 63, 3)
-        #Window.line_goriz1(self, 280, 446, 500, 3)
-        #Window.rectangle(self, 1, 1, 1077, 717)
-        #Window.rectangle(self, 2, 2, 1076, 716)
-        #Window.rectangle(self, 3, 3, 1076, 716)
-        #Window.rectangle(self, 4, 4, 1076, 716)
-
-    def check_collision(sp1, sp2):
+    def check_collision(self, sp1, sp2):
         for i in sp1:
             if i in sp2:
                 return False
         return True
 
-    def run(self):
+    def lvl1(self):
+        Window.fill_Window(self, (0, 100, 240))
+        sp_wall, sp_exit = Window.draw_l1(self)
+        self.size_p = 20
+        self.pos_x, self.pos_y = 530, 355
+        sp_pl = Window.rectangle1(self, self.pos_x, self.pos_y, self.size_p, self.size_p, color=(100, 10, 100))
+        return sp_wall, sp_exit, sp_pl
+
+    def lvl2(self):
+        Window.fill_Window(self, (0, 100, 240))
+        sp_wall, sp_exit = Window.draw_l2(self)
+        self.size_p = 5
+        self.pos_x, self.pos_y = 695, 258
+        sp_pl = Window.rectangle1(self, self.pos_x, self.pos_y, self.size_p, self.size_p, color=(0, 0, 0))
+        return sp_wall, sp_exit, sp_pl
+
+    def up1(self,sp_exit,sp_wall):
+        global level
+        if not Window.check_collision(self, Window.rectangle2(self, self.pos_x + self.size_p, self.pos_y, self.size_p,
+                                                              self.size_p), sp_exit):
+            Window.fill_Window(self, (0, 100, 240))
+            Window.draw_you_win(self)
+            level = 0
+        elif Window.check_collision(self, Window.rectangle2(self, self.pos_x, self.pos_y - self.size_p, self.size_p,
+                                                            self.size_p), sp_wall):
+            try:
+                Window.rectangle1(
+                    self, self.pos_x, self.pos_y, self.size_p, self.size_p, color=(100, 10, 100))
+                Window.rectangle1(
+                    self, self.pos_x, self.pos_y - self.size_p, self.size_p, self.size_p)
+                self.pos_y = self.pos_y - self.size_p
+            except:
+                Window.rectangle1(
+                    self, self.pos_x, self.pos_y, self.size_p, self.size_p, color=(100, 10, 100))
+                Window.rectangle1(
+                    self, self.pos_x, self.pos_y, self.size_p, self.size_p)
+    
+    def left(self, sp_exit, sp_wall):
+        global level
+        if not Window.check_collision(self, Window.rectangle2(self, self.pos_x + self.size_p, self.pos_y, self.size_p,
+                                                              self.size_p), sp_exit):
+            Window.fill_Window(self, (0, 100, 240))
+            Window.draw_you_win(self)
+            level = 0
+        elif Window.check_collision(self, Window.rectangle2(self, self.pos_x - self.size_p, self.pos_y, self.size_p,
+                                                            self.size_p), sp_wall):
+            try:
+                Window.rectangle1(
+                    self, self.pos_x, self.pos_y, self.size_p, self.size_p, color=(100, 10, 100))
+                Window.rectangle1(
+                    self, self.pos_x - self.size_p, self.pos_y, self.size_p, self.size_p)
+                self.pos_x = self.pos_x - self.size_p
+            except:
+                Window.rectangle1(
+                    self, self.pos_x, self.pos_y, self.size_p, self.size_p, color=(100, 10, 100))
+                Window.rectangle1(
+                    self, self.pos_x, self.pos_y, self.size_p, self.size_p)
+
+    def right(self, sp_exit, sp_wall):
+        global level
+        if not Window.check_collision(self, Window.rectangle2(self, self.pos_x + self.size_p, self.pos_y, self.size_p,
+                                                              self.size_p), sp_exit):
+            Window.fill_Window(self, (0, 100, 240))
+            Window.draw_you_win(self)
+            level = 0
+        elif Window.check_collision(self, Window.rectangle2(self, self.pos_x + self.size_p, self.pos_y, self.size_p,
+                                                            self.size_p), sp_wall):
+            try:
+                Window.rectangle1(
+                    self, self.pos_x, self.pos_y, self.size_p, self.size_p, color=(100, 10, 100))
+                Window.rectangle1(
+                    self, self.pos_x + self.size_p, self.pos_y, self.size_p, self.size_p)
+                self.pos_x = self.pos_x + self.size_p
+            except:
+                Window.rectangle1(
+                    self, self.pos_x, self.pos_y, self.size_p, self.size_p, color=(100, 10, 100))
+                Window.rectangle1(
+                    self, self.pos_x, self.pos_y, self.size_p, self.size_p)
+
+    def nado(self):
         sdl2.ext.init()
         self.window.show()
         running = True
-        Window.fill_Window(self, (0, 100, 240))
         Window.draw_menu(self)
-        while running:            
+        return running
+
+    def run(self):
+        running = Window.nado(self)
+        level = 0
+        times = {
+            0:'error',
+            1:120, 
+            2:500
+            }
+        while running:
+            if level != 0 and time.time() - timing > times[level]:
+                Window.draw_game_over(self)
+            elif level != 0:
+                data.print_C(str(round(times[level] + (timing - time.time()))))
+                os.system('cls')
             events = sdl2.ext.get_events()
             for event in events:
                 if event.type == sdl2.SDL_QUIT:
                     running = False
-                    break
                 elif event.type == sdl2.SDL_KEYDOWN:
                     if event.key.keysym.sym == sdl2.SDLK_SPACE:
-                        Window.fill_Window(self, (0, 100, 240))
                         Window.draw_menu(self)
+                        level = 0
                     elif event.key.keysym.sym == sdl2.SDLK_1:
-                        Window.fill_Window(self, (0, 100, 240))
-                        sp_wall, sp_exit = Window.draw_l1(self)
-                        self.pos_x, self.pos_y = 530, 355
-                        sp_pl = Window.rectangle1(self, self.pos_x, self.pos_y, self.size_p, self.size_p, color=(100, 10, 100))
+                        if level == 0:
+                            level = 1
+                            sp_wall, sp_exit, sp_pl = Window.lvl1(self)
+                            timing = time.time()
                     elif event.key.keysym.sym == sdl2.SDLK_2:
-                        Window.fill_Window(self, (0, 100, 240))
-                        sp_wall, sp_exit = Window.draw_l2(self)
-                        self.size_p = 5
-                        self.pos_x, self.pos_y = 695, 258
-                        sp_pl = Window.rectangle1(self, self.pos_x, self.pos_y, self.size_p, self.size_p, color=(0, 0, 0))
+                        if level == 0:
+                            level = 2
+                            sp_wall, sp_exit, sp_pl = Window.lvl2(self)
+                            timing = time.time()
                     elif event.key.keysym.sym == sdl2.SDLK_g:
-                        Window.fill_Window(self, (0, 100, 240))
-                        Window.draw_pravila(self)
+                        if level == 0:
+                            Window.draw_pravila(self)
                     elif event.key.keysym.sym == sdl2.SDLK_RIGHT:
-                        if not Window.check_collision(Window.rectangle2(self, self.pos_x +  self.size_p, self.pos_y, self.size_p, self.size_p), sp_exit):
-                            Window.fill_Window(self, (0, 100, 240))
-                            Window.draw_you_win(self)
-                        elif Window.check_collision(Window.rectangle2(self, self.pos_x +  self.size_p, self.pos_y, self.size_p, self.size_p), sp_wall):
-                            try:
-                                Window.rectangle1(
-                                    self, self.pos_x, self.pos_y,  self.size_p,  self.size_p, color=(100, 10, 100))
-                                Window.rectangle1(
-                                    self, self.pos_x +  self.size_p, self.pos_y,  self.size_p, self.size_p)
-                                self.pos_x = self.pos_x + self.size_p
-                            except:
-                                Window.rectangle1(
-                                    self, self.pos_x, self.pos_y,  self.size_p, self.size_p, color=(100, 10, 100))
-                                Window.rectangle1(
-                                    self, self.pos_x, self.pos_y,  self.size_p, self.size_p)
+                        Window.right(self, sp_exit, sp_wall)
                     elif event.key.keysym.sym == sdl2.SDLK_LEFT:
-                        if not Window.check_collision(Window.rectangle2(self, self.pos_x +  self.size_p, self.pos_y, self.size_p, self.size_p), sp_exit):
-                            Window.fill_Window(self, (0, 100, 240))
-                            Window.draw_you_win(self)
-                        elif Window.check_collision(Window.rectangle2(self, self.pos_x -  self.size_p, self.pos_y, self.size_p, self.size_p), sp_wall):
-                            try:
-                                Window.rectangle1(
-                                    self, self.pos_x, self.pos_y,  self.size_p,  self.size_p, color=(100, 10, 100))
-                                Window.rectangle1(
-                                    self, self.pos_x -  self.size_p, self.pos_y,  self.size_p,  self.size_p)
-                                self.pos_x = self.pos_x -  self.size_p
-                            except:
-                                Window.rectangle1(
-                                    self, self.pos_x, self.pos_y,  self.size_p,  self.size_p, color=(100, 10, 100))
-                                Window.rectangle1(
-                                    self, self.pos_x, self.pos_y, self.size_p,  self.size_p)
+                        Window.left(self, sp_exit, sp_wall)
                     elif event.key.keysym.sym == sdl2.SDLK_UP:
-                        if not Window.check_collision(Window.rectangle2(self, self.pos_x +  self.size_p, self.pos_y, self.size_p, self.size_p), sp_exit):
-                            Window.fill_Window(self, (0, 100, 240))
-                            Window.draw_you_win(self)
-                        elif Window.check_collision(Window.rectangle2(self, self.pos_x, self.pos_y -  self.size_p, self.size_p, self.size_p), sp_wall):
-                            try:
-                                Window.rectangle1(
-                                    self, self.pos_x, self.pos_y, self.size_p,  self.size_p, color=(100, 10, 100))
-                                Window.rectangle1(
-                                    self, self.pos_x, self.pos_y -  self.size_p, self.size_p,  self.size_p)
-                                self.pos_y = self.pos_y -  self.size_p
-                            except:
-                                Window.rectangle1(
-                                    self, self.pos_x, self.pos_y, self.size_p, self.size_p, color=(100, 10, 100))
-                                Window.rectangle1(
-                                    self, self.pos_x, self.pos_y, self.size_p,  self.size_p)
+                        Window.up1(self, sp_exit, sp_wall)
                     elif event.key.keysym.sym == sdl2.SDLK_DOWN:
-                        if not Window.check_collision(Window.rectangle2(self, self.pos_x +  self.size_p, self.pos_y, self.size_p, self.size_p), sp_exit):
-                            Window.fill_Window(self, (0, 100, 240))
-                            Window.draw_you_win(self)
-                        elif Window.check_collision(Window.rectangle2(self, self.pos_x, self.pos_y +  self.size_p, self.size_p, self.size_p), sp_wall):
-                            try:
-                                Window.rectangle1(self, self.pos_x, self.pos_y,  self.size_p,  self.size_p, color=(100, 10, 100))
-                                Window.rectangle1(self, self.pos_x, self.pos_y +  self.size_p, self.size_p, self.size_p)
-                                self.pos_y = self.pos_y +  self.size_p
-                            except:
-                                Window.rectangle1(self, self.pos_x, self.pos_y,  self.size_p, self.size_p, color=(100, 10, 100))
-                                Window.rectangle1(self, self.pos_x, self.pos_y,  self.size_p, self.size_p)
+                        Window.down(self, sp_wall, sp_exit)
             self.window.refresh()
         return 0
 
@@ -427,10 +488,7 @@ def main():
     #pg.mixer.music.load('data/music.mp3')
     #pg.mixer.music.play()
     window.run()
-    # window.fill_Window((240, 0, 0))
-    # fill_Window(window, 240, 0, 0)
 
 
 if __name__ == "__main__":
-    # window = Window((1080, 720), (240, 40, 40), "Best Game")
     sys.exit(main())

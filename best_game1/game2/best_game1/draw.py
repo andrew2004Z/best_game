@@ -1,6 +1,9 @@
 from PIL import Image, ImageDraw
 
 
+
+
+
 def draw_menu(path):
     image = Image.open(path)
     size = image.size
@@ -38,6 +41,14 @@ def draw_111(path, color=(255, 255, 255, 255)):
     return sp
 # rint(draw_menu('menu.png'))
 
+"""
+    Return whether an object is an instance of a class or of a subclass thereof.
+    
+    A tuple, as in ``isinstance(x, (A, B, ...))``, may be given as the target to
+    check against. This is equivalent to ``isinstance(x, A) or isinstance(x, B)
+    or ...`` etc.
+    """
+    pass
 
 def draw_1(path, color, new_image):
     sp = []
@@ -47,16 +58,17 @@ def draw_1(path, color, new_image):
     draw = ImageDraw.Draw(new_image)
     for i in range(size[0]):
         for j in range(size[1]):
-            if pix[i, j] != color:
+            print(pix[i, j])
+            if pix[i, j] == color:
                 sp.append([i*5, round(j*3.5)])
                 #pix[i, j] = (255, 255, 255)
-                draw.point((i, j), (0, 0, 0, 255))
+                draw.point((i, j), pix[i, j])
     return sp
 
 #with open('data/1.txt', 'w') as f:
 #    f.write(str(draw_111('data/1.png', (0,0,0, 255))))
 #print(draw_111('data/1.png', (0,0,0, 255)))
-
-new_image = Image.open('data/1.png')
-draw_1('data/1.png', (255, 255, 255, 255), new_image)
-new_image.save('2.png', 'PNG')
+for i in range(0, 10):
+    new_image = Image.open(f'data/{i}.jpg')
+    draw_1(f'data/{i}.jpg', (255, 255, 255), new_image)
+    new_image.save(f'data/{i}.png', 'PNG')
