@@ -8,6 +8,7 @@ import time
 import data
 import os
 
+
 class Window:
     def __init__(self, size, name, x, y, x1, y1):
         self.size = size
@@ -37,7 +38,7 @@ class Window:
             for i in range(l * -1):
                 Window.d1_point(self, x - 1, y - 1,
                                 self.window.get_surface(), color)
-                sp.append([x-1, y-1])
+                sp.append([x - 1, y - 1])
                 y = y - 1
         else:
             for i in range(l):
@@ -51,7 +52,7 @@ class Window:
         sp = [[x, y]]
         if l < 0:
             for i in range(l * -1):
-                sp.append([x-1, y-1])
+                sp.append([x - 1, y - 1])
                 y = y - 1
         else:
             for i in range(l):
@@ -64,9 +65,9 @@ class Window:
         Window.d1_point(self, x, y, self.window.get_surface(), color)
         if l < 0:
             for i in range(l * -1):
-                Window.d1_point(self, x-1, y, self.window.get_surface(), color)
+                Window.d1_point(self, x - 1, y, self.window.get_surface(), color)
                 x = x - 1
-                sp.append([x-1, y])
+                sp.append([x - 1, y])
         else:
             for i in range(l):
                 Window.d1_point(self, x, y, self.window.get_surface(), color)
@@ -75,11 +76,11 @@ class Window:
         return sp
 
     def line_goriz2(self, x, y, l):
-        sp = [[x,  y]]
+        sp = [[x, y]]
         if l < 0:
             for i in range(l * -1):
                 x = x - 1
-                sp.append([x-1, y])
+                sp.append([x - 1, y])
         else:
             for i in range(l):
                 x = x + 1
@@ -112,7 +113,7 @@ class Window:
         sp += Window.line_vert2(self, x, y, h)
         sp += Window.line_goriz2(self, xyh[0], xyh[1], w)
         sp += Window.line_vert2(self, xyw[0], xyw[1], h)
-        #print(sp)
+        # print(sp)
         return sp
 
     def rectangle1(self, x, y, w, h, color=(0, 0, 0)):
@@ -129,10 +130,12 @@ class Window:
         for i in range(x, x + w + 1):
             for j in range(y, y + h + 1):
                 try:
-                    if pix[i - 1, y] != (0, 0, 0) or pix[i - 1, j - 1] != (0, 0, 0) or pix[i, j - 1] != (0, 0, 0) or pix[i + 1, j] != (0, 0, 0) or pix[i, j + 1] != (0, 0, 0) or pix[i + 1, j + 1] != (0, 0, 0) or pix[i - 1, j + 1] != (0, 0, 0) or pix[i + 1, j - 1] != (0, 0, 0):
+                    if pix[i - 1, y] != (0, 0, 0) or pix[i - 1, j - 1] != (0, 0, 0) or pix[i, j - 1] != (0, 0, 0) or \
+                            pix[i + 1, j] != (0, 0, 0) or pix[i, j + 1] != (0, 0, 0) or pix[i + 1, j + 1] != (
+                    0, 0, 0) or pix[i - 1, j + 1] != (0, 0, 0) or pix[i + 1, j - 1] != (0, 0, 0):
                         sp.append([i, j])
                 except:
-                   pass
+                    pass
         return sp
 
     def draw_0(self, x1, y1):
@@ -154,7 +157,6 @@ class Window:
             for y in range(size[1]):
                 if pix[x, y] != (255, 255, 255):
                     Window.d1_point(self, x + x1, y + y1, self.window_timer.get_surface(), pix[x, y])
-
 
     def drawDDA(self, x1, y1, x2, y2, color=(0, 0, 0)):
         x, y = x1, y1
@@ -187,15 +189,16 @@ class Window:
         for x in range(size[0]):
             for y in range(size[1]):
                 if pix[x, y] == (0, 0, 0):
-                    #print(pix[x - 1, y])
+                    # print(pix[x - 1, y])
                     try:
-                        if pix[x - 1, y] != (0, 0, 0) or pix[x - 1, y - 1] != (0, 0, 0) or pix[x, y - 1] != (0, 0, 0) or pix[x + 1, y] != (0, 0, 0) or pix[x, y + 1] != (0, 0, 0) or pix[x + 1, y + 1] != (0, 0, 0) or pix[x - 1, y + 1] != (0, 0, 0) or pix[x + 1, y - 1] != (0, 0, 0):
+                        if pix[x - 1, y] != (0, 0, 0) or pix[x - 1, y - 1] != (0, 0, 0) or pix[x, y - 1] != (0, 0, 0) or \
+                                pix[x + 1, y] != (0, 0, 0) or pix[x, y + 1] != (0, 0, 0) or pix[x + 1, y + 1] != (
+                        0, 0, 0) or pix[x - 1, y + 1] != (0, 0, 0) or pix[x + 1, y - 1] != (0, 0, 0):
                             sp.append([x, y])
                     except:
                         pass
                     Window.d1_point(self, x, y, self.window.get_surface(), (0, 0, 0))
         return sp, sp1
-
 
     def draw_menu(self):
         Window.fill_Window(self, (0, 100, 240))
@@ -207,7 +210,6 @@ class Window:
             for y in range(size[1]):
                 if pix[x, y] != (255, 255, 255):
                     Window.d1_point(self, x, y, self.window.get_surface(), (0, 0, 0))
-
 
     def draw_pravila(self):
         Window.fill_Window(self, (0, 100, 240))
@@ -239,7 +241,7 @@ class Window:
         for x in range(size[0]):
             for y in range(size[1]):
                 if pix[x, y] != (0, 0, 0):
-                    Window.d1_point(self, x, y, self.window.get_surface(), (255, 0, 0))
+                    Window.d1_point(self, x, y, self.window.get_surface(), pix[x, y])
         level = 0
 
     def draw_l2(self):
@@ -261,13 +263,14 @@ class Window:
             for y in range(size[1]):
                 if pix[x, y] == (0, 0, 0):
                     try:
-                        if pix[x - 1, y] != (0, 0, 0) or pix[x - 1, y - 1] != (0, 0, 0) or pix[x, y - 1] != (0, 0, 0) or pix[x + 1, y] != (0, 0, 0) or pix[x, y + 1] != (0, 0, 0) or pix[x + 1, y + 1] != (0, 0, 0) or pix[x - 1, y + 1] != (0, 0, 0) or pix[x + 1, y - 1] != (0, 0, 0):
+                        if pix[x - 1, y] != (0, 0, 0) or pix[x - 1, y - 1] != (0, 0, 0) or pix[x, y - 1] != (0, 0, 0) or \
+                                pix[x + 1, y] != (0, 0, 0) or pix[x, y + 1] != (0, 0, 0) or pix[x + 1, y + 1] != (
+                        0, 0, 0) or pix[x - 1, y + 1] != (0, 0, 0) or pix[x + 1, y - 1] != (0, 0, 0):
                             sp.append([x, y])
                     except:
                         pass
                     Window.d1_point(self, x, y, self.window.get_surface(), (0, 0, 0))
         return sp, sp1
-
 
     def down(self, sp_wall, sp_exit):
         global level
@@ -309,7 +312,7 @@ class Window:
         sp_pl = Window.rectangle1(self, self.pos_x, self.pos_y, self.size_p, self.size_p, color=(0, 0, 0))
         return sp_wall, sp_exit, sp_pl
 
-    def up1(self,sp_exit,sp_wall):
+    def up1(self, sp_exit, sp_wall):
         global level
         if not Window.check_collision(self, Window.rectangle2(self, self.pos_x + self.size_p, self.pos_y, self.size_p,
                                                               self.size_p), sp_exit):
@@ -330,7 +333,7 @@ class Window:
                     self, self.pos_x, self.pos_y, self.size_p, self.size_p, color=(100, 10, 100))
                 Window.rectangle1(
                     self, self.pos_x, self.pos_y, self.size_p, self.size_p)
-    
+
     def left(self, sp_exit, sp_wall):
         global level
         if not Window.check_collision(self, Window.rectangle2(self, self.pos_x + self.size_p, self.pos_y, self.size_p,
@@ -385,17 +388,18 @@ class Window:
     def run(self):
         running = Window.nado(self)
         level = 0
+        p = 10000000
         times = {
-            0:'error',
-            1:120, 
-            2:500
-            }
+            0: 'error',
+            1: 100,
+            2: 500}
         while running:
             if level != 0 and time.time() - timing > times[level]:
                 Window.draw_game_over(self)
-            elif level != 0:
-                data.print_C(str(round(times[level] + (timing - time.time()))))
+            elif level != 0 and p != str(round(times[level] + (timing - time.time()))):
                 os.system('cls')
+                p = str(round(times[level] + (timing - time.time())))
+                data.print_C(p)
             events = sdl2.ext.get_events()
             for event in events:
                 if event.type == sdl2.SDL_QUIT:
@@ -438,12 +442,12 @@ class Window:
 
 
 def main():
-    window = Window((1082, 722), "Best Game", 0, 700, 10, 0)
-    #pg.init()
-    #pg.mixer.music.load('data/music.mp3')
-    #pg.mixer.music.play()
+    window = Window((1082, 722), "PENT", 0, 700, 10, 0)
+    pg.init()
+    pg.mixer.music.load('data/music3.mp3')
+    pg.mixer.music.play()
     window.run()
-
+    os.system('cls')
 
 if __name__ == "__main__":
     sys.exit(main())

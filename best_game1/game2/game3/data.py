@@ -92,5 +92,7 @@ def print_C(n):
             print(numbers[j][row], end='  ')
         print()
         row += 1
-#while True:
-#    print_C(input())
+
+if __name__ == '__main__':
+    while True:
+        print_C(input())
